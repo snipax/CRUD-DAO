@@ -1,7 +1,6 @@
 <?php
 	include 'dao.php';
 	$sql = "SELECT * FROM pessoa";
-	$result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
 <head>
@@ -14,8 +13,11 @@
 		<button class="button-create" onclick="window.location.href='create.php'">Criar Novo Usuário</button>
   		<h2>Lista de Usuários</h2>
 		<?php
-			if ($result->num_rows > 0){
-				while ($row = $result->fetch_assoc()){
+
+		try {
+			$result = $conn->query($sql);
+			if ($result && $result->rowCount() > 0){
+				while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 					echo "<div class='user-list'>";
 					echo "ID: " . $row["CODIGO"] . " - Nome: " . $row["NOME"] . " - NOMESOCIAL: " . $row["NOMESOCIAL"] . " - CPF: " . $row["CPF"] . " - EMAIL: " . $row["EMAIL"] . " - ENDERECO: " . $row["ENDERECO"] . " - SEXO: " . $row["SEXO"] ;
 					echo "<div class='action-buttons'>";
@@ -23,10 +25,16 @@
 					echo "<button class='delete' onclick=\"if(confirm('Tem certeza que deseja excluir?')) { window.location.href='delete.php?codigo=" . $row["CODIGO"] . "'; }\">Excluir</button>";
 					echo "</div></div>";
 				}
+			$conn = null;
 			} else {
 				echo "<p>Nenhum usuário encontrado.</p>";
+				$conn = null;
 			}
-			$conn->close();
+		} catch(PDOException $e) {
+			echo "Erro: " . $e->getMessage();
+			$conn = null;
+		
+		}
 		?>
 	</div>
 </body>

@@ -7,13 +7,22 @@
 		$email = $_POST["email"];
 		$endereco = $_POST["endereco"];
 		$sexo = $_POST["sexo"];
-		
-		$sql = "INSERT INTO pessoa (nome, nomesocial, cpf, email, endereco, sexo) VALUES('$nome','$nsocial','$cpf','$email','$endereco','$sexo')";
-		
-		if ($conn->query($sql) === TRUE){
+
+		try {
+			$sql = "INSERT INTO pessoa (nome, nomesocial, cpf, email, endereco, sexo) VALUES (:nome, :nsocial, :cpf, :email, :endereco, :sexo)";
+			$stmt = $conn->prepare($sql);
+			$stmt->bindValue(':nome', $nome);
+			$stmt->bindValue(':nsocial', $nsocial);
+			$stmt->bindValue(':cpf', $cpf);
+			$stmt->bindValue(':email', $email);
+			$stmt->bindValue(':endereco', $endereco);
+			$stmt->bindValue(':sexo', $sexo);
+
+			$stmt->execute();
 			echo "Novo usuário criado com sucesso";
-		} else {
-			echo "Erro: " . $sql . "<br>" . $conn->error;
+			header("location: index.php");
+		} catch(PDOException $e) {
+			echo "Erro: " . $e->getMessage();
 		}
 	}
 ?>

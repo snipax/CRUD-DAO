@@ -3,26 +3,19 @@
     include 'dao.php';
     if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["codigo"])){
         $id = $_GET["codigo"];
-        $sql = "delete from pessoa where codigo = $id";
-   
-    if($conn->query($sql)=== TRUE){
-            echo "Novo usuário deletado com sucesso!!";
+
+        try {
+            $sql = "DELETE FROM pessoa WHERE CODIGO = :codigo";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':codigo', $id);
+            $stmt->execute();
+            echo "Usuario deletado com sucesso!";
+            header("location: index.php");
+            exit;
+            
         }
-        else{echo "ERRO: ".$sql."<br>".$conn->error;
+        catch(PDOException $e){
+            echo "Erro: " . $e->getMessage();
         }
     }
 ?>
-
-<!DOCTYPE html>
-<head>
-    <title>Create </title>
-    <meta charset="UTF-8"/>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <form action="index.php" method=get">
-    <button class='delete' type="submit">Voltar</button>
-    </form>
-   
-</body>
-</html>

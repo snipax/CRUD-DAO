@@ -3,10 +3,11 @@
 	$username = "root";
 	$password = "";
 	$dbname = "cadastro";
-	
-	$conn = new mysqli($servername, $username, $password, $dbname);
-	
-	if ($conn->connect_error){
-			die("Conexão Falhou: " . $conn->connect_error);
+
+	try {
+		$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	} catch(PDOException $e) {
+		die("Conexão Falhou: " . $e->getMessage());
 	}
 ?>

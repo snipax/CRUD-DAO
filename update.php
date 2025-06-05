@@ -3,26 +3,51 @@ include 'dao.php';
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 	$codigo = $_POST["codigo"];
 	$nome = $_POST["nome"];
-	$nsocial = $_POST["nsocial"];
+	$nomesocial = $_POST["nomesocial"];
 	$cpf = $_POST["cpf"];
 	$email = $_POST["email"];
 	$endereco = $_POST["endereco"];
 	$sexo = $_POST["sexo"];
 	
-	$sql = "UPDATE pessoa SET nome='$nome', nomesocial='$nsocial', cpf='$cpf', email='$email', endereco='$endereco', sexo='$sexo' WHERE codigo=$codigo";
-
-	if($conn->query($sql)=== TRUE){
-            echo "Usuário atualizado com sucesso!!";
-        }
-        else{
-			echo "ERRO: ".$sql."<br>".$conn->error;
-        }
-} else {
-	$codigo = $_GET['codigo'];
-	$sql = "SELECT * FROM pessoa WHERE codigo=$codigo";
-	$result = $conn->query($sql);
-	$usuario = $result->fetch_assoc();
+try {
+	$sql = "UPDATE pessoa SET nome=:nome, nomesocial=:nomesocial, cpf=:cpf, email=:email, endereco=:endereco, sexo=:sexo WHERE codigo=:codigo";
+	$stmt = $conn->prepare($sql);
+	$stmt->bindValue(':nome', $nome);
+	$stmt->bindValue(':nomesocial', $nomesocial);
+	$stmt->bindValue(':cpf', $cpf);
+	$stmt->bindValue(':email', $email);
+	$stmt->bindValue(':endereco', $endereco);
+	$stmt->bindValue(':sexo', $sexo);
+	$stmt->bindValue(':codigo', $codigo);
+	$stmt->execute();
+	echo "Usuário atualizado com sucesso!";
+	header("location: index.php");
+	$conn = null;
+	}	
+catch(PDOException $e) {
+	echo "Erro: " . $e->getMessage();
+	$conn = null;
 }
+}
+
+ else {
+	if($_SERVER["REQUEST_METHOD"] ==  "GET"){
+	$codigo = $_GET['codigo'];
+		try {
+		$sql = "SELECT * FROM pessoa WHERE codigo=:codigo";
+		$stmt = $conn->prepare($sql);
+		$stmt->bindValue(':codigo', $codigo);
+		$stmt->execute();
+		$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+		$conn = null;
+		}
+		catch(PDOException $e) {
+			echo "Erro: " . $e->getMessage();
+			$conn = null;
+		}
+	}
+ }
+
 ?>
 <!DOCTYPE html>
 <head>
