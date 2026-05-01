@@ -70,7 +70,3 @@ http://localhost/CRUD-DAO/index.php
 - Os campos no formulário correspondem às colunas da tabela `pessoa`.
 - O botão **Criar Novo Usuário** direciona para `create.php`.
 - A listagem exibe botões para **Editar** e **Excluir**.
-
-## 📄 Licença
-
-Projeto educacional desenvolvido em aula para fins de estudo.
